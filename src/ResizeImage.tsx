@@ -16,7 +16,7 @@ function ResizeImage() {
     null
   );
   const [resizedImageSize, setResizedImageSize] = useState(0);
-  const [desiredQuality, setDesiredQuality] = useState(0.9);
+  const [desiredQuality, setDesiredQuality] = useState(0.6);
   const [desiredWidth, setDesiredWidth] = useState(2560);
   const [disableDownload, setDisableDownload] = useState(true);
 
@@ -26,8 +26,6 @@ function ResizeImage() {
         const img = new Image();
         img.src = resizedImageUrl;
         img.onload = () => {
-          console.log(img.width);
-          console.log(img.height);
           setResizedImage(img);
         };
       }
@@ -124,6 +122,7 @@ function ResizeImage() {
             // multiple
             accept="image/*"
             onChange={(e) => {
+              setDisableDownload(true);
               const file = e.target.files?.[0];
               if (file) {
                 setFile(file);
@@ -221,7 +220,7 @@ function ResizeImage() {
         >
           Download Image
         </Button>
-        {resizedImage && (
+        {resizedImage && !disableDownload && (
           <>
             <Typography sx={{ mt: 1 }} variant="subtitle1">
               Dimensions: ({resizedImage?.width} X {resizedImage?.height})
