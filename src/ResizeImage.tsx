@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import Pica from "pica";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import { VisuallyHiddenInput } from "./VisuallyHiddenInput";
@@ -18,6 +28,7 @@ function ResizeImage() {
   const [resizedImageSize, setResizedImageSize] = useState(0);
   const [desiredQuality, setDesiredQuality] = useState(0.6);
   const [desiredWidth, setDesiredWidth] = useState(2560);
+  const [format, setFormat] = useState("webp");
   const [disableDownload, setDisableDownload] = useState(true);
 
   useEffect(
@@ -45,7 +56,8 @@ function ResizeImage() {
     if (resizedImageUrl) {
       const a = document.createElement("a");
       a.href = resizedImageUrl;
-      a.download = "resized-image.jpg";
+      a.download = `resized-image.${format}`;
+      // a.download = "resized-image.jpg";
       a.click();
     }
   };
@@ -74,9 +86,12 @@ function ResizeImage() {
     try {
       // Use Pica to resize the image
       const result = await pica.resize(inputCanvas, outputCanvas);
+      console.log(typeof result);
+      console.log(result);
 
       // Convert the resized canvas to a Blob
-      const blob = await pica.toBlob(result, "image/jpeg", desiredQuality);
+      // const blob = await pica.toBlob(result, "image/jpeg", desiredQuality);
+      const blob = await pica.toBlob(result, `image/${format}`, desiredQuality);
 
       setResizedImageSize(blob.size);
 
@@ -194,6 +209,20 @@ function ResizeImage() {
             },
           }}
         />
+        <FormControl size="small" disabled={!originalImage}>
+          <InputLabel>Format</InputLabel>
+          <Select
+            label="Format"
+            value={format}
+            onChange={(e) => {
+              setDisableDownload(true);
+              setFormat(e.target.value);
+            }}
+          >
+            <MenuItem value="webp">WEBP</MenuItem>
+            <MenuItem value="jpeg">JPEG</MenuItem>
+          </Select>
+        </FormControl>
         <Button
           variant="contained"
           color="secondary"
